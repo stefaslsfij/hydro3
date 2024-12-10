@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hydronetics - Learning Dashboard</title>
+    <style>
+        body {
+            font-family: 'Roboto', sans-serif;
+            background: linear-gradient(to right, #0097A7, #006064);
+            color: white;
+            margin: 0;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+        }
+        .container {
+            text-align: center;
+        }
+        h1 {
+            font-size: 3.5em;
+            margin-bottom: 30px;
+            text-shadow: 2px 2px 10px rgba(0, 0, 0, 0.7);
+        }
+        button {
+            font-size: 1.5em;
+            padding: 20px 40px;
+            margin: 20px;
+            background-color: #004d40;
+            border: none;
+            border-radius: 8px;
+            color: white;
+            cursor: pointer;
+            transition: transform 0.3s ease;
+        }
+        button:hover {
+            transform: scale(1.1);
+            background-color: #00796b;
+        }
+        .footer {
+            position: absolute;
+            bottom: 10px;
+            color: #cfd8dc;
+            font-size: 0.9em;
+        }
+        .slide-container {
+            max-width: 800px;
+            margin: 0 auto;
+            background-color: rgba(0, 0, 0, 0.5);
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0px 0px 20px rgba(0, 0, 0, 0.6);
+            display: none;
+        }
+        .slide-content {
+            font-size: 1.8em;
+            line-height: 1.6;
+            margin-bottom: 30px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1>Welcome to Hydronetics Learning Portal</h1>
+        <p>Select "Start Learning" to dive into the ocean science module.</p>
+        <button id="learning-btn">Start Learning</button>
+    </div>
+
+    <div class="slide-container" id="learning-slides">
+        <h1>Learn About the Ocean</h1>
+        <div id="slide-content" class="slide-content">
+            <p>Welcome! Let's dive into the wonders of the ocean!</p>
+        </div>
+        <button id="prev-slide">Previous</button>
+        <button id="next-slide">Next</button>
+    </div>
+
+    <div class="footer">
+        <p>Created and Coded by Stefanos Bantekas</p>
+    </div>
+
+    <script>
+        // Slide content data
+        const slides = [
+            "The ocean covers over 70% of the Earth's surface. It’s home to a vast array of marine life, ranging from microscopic organisms to large marine mammals.",
+            "The ocean is divided into five main layers: the epipelagic, mesopelagic, bathypelagic, abyssopelagic, and hadalpelagic zones.",
+            "Marine life adapts to the conditions of each zone, such as the sunlit surface waters or the dark, cold depths.",
+            "Coral reefs are among the most biodiverse ecosystems in the world, providing shelter for countless species of marine life."
+        ];
+
+        let currentSlide = 0;
+
+        // Function to update the slide content
+        function updateSlide() {
+            document.getElementById('slide-content').innerText = slides[currentSlide];
+        }
+
+        // Event listeners for slide navigation
+        document.getElementById('next-slide').onclick = function() {
+            currentSlide++;
+            if (currentSlide >= slides.length) currentSlide = 0;
+            updateSlide();
+        };
+
+        document.getElementById('prev-slide').onclick = function() {
+            currentSlide--;
+            if (currentSlide < 0) currentSlide = slides.length - 1;
+            updateSlide();
+        };
+
+        // Event listener for "Start Learning" button
+        document.getElementById('learning-btn').onclick = function() {
+            document.querySelector('.container').style.display = 'none';  // Hide dashboard
+            document.getElementById('learning-slides').style.display = 'block';  // Show learning slides
+            updateSlide();  // Initialize the first slide
+        };
+    </script>
+
+</body>
+</html>
