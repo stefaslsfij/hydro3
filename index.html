@@ -3,121 +3,341 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Hydronetics - Learning Dashboard</title>
+    <title>Hydronetics Learning Quiz</title>
     <style>
         body {
-            font-family: 'Roboto', sans-serif;
-            background: linear-gradient(to right, #0097A7, #006064);
-            color: white;
+            font-family: Arial, sans-serif;
+            background-color: #f2f2f2;
+            color: #333;
             margin: 0;
-            height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            flex-direction: column;
-        }
-        .container {
-            text-align: center;
+            padding: 0;
         }
         h1 {
-            font-size: 3.5em;
-            margin-bottom: 30px;
-            text-shadow: 2px 2px 10px rgba(0, 0, 0, 0.7);
-        }
-        button {
-            font-size: 1.5em;
-            padding: 20px 40px;
-            margin: 20px;
-            background-color: #004d40;
-            border: none;
-            border-radius: 8px;
+            text-align: center;
+            padding: 20px;
+            background-color: #0099cc;
             color: white;
+        }
+        .content {
+            margin: 20px;
+        }
+        .button {
+            padding: 10px 20px;
+            background-color: #0099cc;
+            color: white;
+            border: none;
             cursor: pointer;
-            transition: transform 0.3s ease;
+            font-size: 16px;
+            margin: 10px;
         }
-        button:hover {
-            transform: scale(1.1);
-            background-color: #00796b;
-        }
-        .footer {
-            position: absolute;
-            bottom: 10px;
-            color: #cfd8dc;
-            font-size: 0.9em;
-        }
-        .slide-container {
-            max-width: 800px;
-            margin: 0 auto;
-            background-color: rgba(0, 0, 0, 0.5);
-            padding: 30px;
+        .slide, .quiz-question {
+            display: flex;
+            flex-direction: column;
+            margin: 20px;
+            padding: 20px;
+            background-color: white;
             border-radius: 10px;
-            box-shadow: 0px 0px 20px rgba(0, 0, 0, 0.6);
-            display: none;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
         }
-        .slide-content {
-            font-size: 1.8em;
-            line-height: 1.6;
-            margin-bottom: 30px;
+        .question {
+            margin-bottom: 10px;
+        }
+        .options {
+            margin-bottom: 20px;
+        }
+        .leaderboard {
+            padding: 10px;
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+        }
+        .leaderboard-table {
+            width: 100%;
+            text-align: left;
+            margin-top: 10px;
+            border-collapse: collapse;
+        }
+        .leaderboard-table th, .leaderboard-table td {
+            padding: 10px;
+            border: 1px solid #ddd;
+        }
+        .leaderboard-table th {
+            background-color: #0099cc;
+            color: white;
+        }
+        .leaderboard-table tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+        .confetti {
+            display: none;
+            position: absolute;
+            top: 10%;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 100;
+        }
+        .leaderboard-inputs {
+            margin: 20px 0;
+        }
+        .leaderboard-inputs input, .leaderboard-inputs button {
+            padding: 10px;
+            font-size: 16px;
+            margin-right: 10px;
         }
     </style>
 </head>
 <body>
 
-    <div class="container">
-        <h1>Welcome to Hydronetics Learning Portal</h1>
-        <p>Select "Start Learning" to dive into the ocean science module.</p>
-        <button id="learning-btn">Start Learning</button>
+    <h1>Hydronetics Learning Quiz</h1>
+
+    <div class="content">
+        <div id="slide-container"></div>
+        <div id="quiz-container" style="display:none;"></div>
+        <div id="leaderboard-container" class="leaderboard" style="display:none;"></div>
     </div>
 
-    <div class="slide-container" id="learning-slides">
-        <h1>Learn About the Ocean</h1>
-        <div id="slide-content" class="slide-content">
-            <p>Welcome! Let's dive into the wonders of the ocean!</p>
-        </div>
-        <button id="prev-slide">Previous</button>
-        <button id="next-slide">Next</button>
-    </div>
-
-    <div class="footer">
-        <p>Created and Coded by Stefanos Bantekas</p>
+    <div class="confetti" id="confetti">
+        🎉🎉🎉
     </div>
 
     <script>
-        // Slide content data
         const slides = [
-            "The ocean covers over 70% of the Earth's surface. It’s home to a vast array of marine life, ranging from microscopic organisms to large marine mammals.",
-            "The ocean is divided into five main layers: the epipelagic, mesopelagic, bathypelagic, abyssopelagic, and hadalpelagic zones.",
-            "Marine life adapts to the conditions of each zone, such as the sunlit surface waters or the dark, cold depths.",
-            "Coral reefs are among the most biodiverse ecosystems in the world, providing shelter for countless species of marine life."
+            {
+                title: "What is the Ocean?",
+                content: "The ocean is a vast body of salt water that covers nearly 71% of the Earth's surface. It plays a crucial role in regulating the Earth's climate and supporting life."
+            },
+            {
+                title: "Ocean Layers",
+                content: "The ocean consists of several layers: the Epipelagic Zone (surface), Mesopelagic Zone (twilight), Bathypelagic Zone (midnight), Abyssopelagic Zone (deep), and Hadalpelagic Zone (trench)."
+            },
+            {
+                title: "Marine Life",
+                content: "The ocean is home to millions of species, ranging from microscopic plankton to the largest animals on Earth, such as blue whales."
+            },
+            {
+                title: "Ocean Currents",
+                content: "Ocean currents are large-scale flows of seawater driven by factors like wind, Earth's rotation, and salinity differences. They play a major role in global climate systems."
+            },
+            {
+                title: "Ocean Pollution",
+                content: "The ocean is facing significant pollution challenges, including plastic waste, chemical spills, and oil leaks, which harm marine life and ecosystems."
+            },
+            {
+                title: "Importance of Oceans",
+                content: "Oceans provide food, oxygen, and regulate the Earth's temperature. They also contribute to the economy through shipping, tourism, and fishing industries."
+            },
+            {
+                title: "Ocean Exploration",
+                content: "Despite covering 70% of the Earth, much of the ocean remains unexplored. Advancements in technology allow scientists to discover new species and understand marine ecosystems."
+            }
+        ];
+
+        const questions = [
+            {
+                question: "What is the largest ocean on Earth?",
+                options: ["Atlantic Ocean", "Indian Ocean", "Pacific Ocean", "Arctic Ocean"],
+                correctAnswer: 2
+            },
+            {
+                question: "What is the primary cause of ocean currents?",
+                options: ["Tides", "Wind", "Fish movement", "Sunlight"],
+                correctAnswer: 1
+            },
+            {
+                question: "What is the deepest part of the ocean called?",
+                options: ["The Mariana Trench", "The Gulf of Mexico", "The Bermuda Triangle", "The Great Barrier Reef"],
+                correctAnswer: 0
+            },
+            {
+                question: "Which ocean is the smallest?",
+                options: ["Atlantic", "Indian", "Southern", "Arctic"],
+                correctAnswer: 3
+            },
+            {
+                question: "What percentage of the Earth's surface is covered by oceans?",
+                options: ["50%", "60%", "71%", "80%"],
+                correctAnswer: 2
+            },
+            {
+                question: "What is the primary threat to marine life today?",
+                options: ["Pollution", "Sharks", "Overfishing", "Earthquakes"],
+                correctAnswer: 0
+            },
+            {
+                question: "Which of these is a type of ocean zone?",
+                options: ["Epipelagic", "Mesopelagic", "Bathypelagic", "All of the above"],
+                correctAnswer: 3
+            },
+            {
+                question: "Which marine animal is the largest?",
+                options: ["Shark", "Dolphin", "Whale", "Octopus"],
+                correctAnswer: 2
+            },
+            {
+                question: "What is one of the main pollutants in the ocean?",
+                options: ["Plastic", "Batteries", "Carbon Dioxide", "Methane"],
+                correctAnswer: 0
+            },
+            {
+                question: "Which of the following is NOT a benefit of oceans?",
+                options: ["Food supply", "Oxygen production", "Climate regulation", "Carbon emissions"],
+                correctAnswer: 3
+            }
         ];
 
         let currentSlide = 0;
+        let currentQuestionIndex = 0;
+        let userScore = 0;
+        let leaderboard = JSON.parse(localStorage.getItem('leaderboard')) || [];
 
-        // Function to update the slide content
-        function updateSlide() {
-            document.getElementById('slide-content').innerText = slides[currentSlide];
+        function loadSlide() {
+            if (currentSlide < slides.length) {
+                const slide = slides[currentSlide];
+                const slideContainer = document.getElementById('slide-container');
+                slideContainer.innerHTML = `
+                    <div class="slide">
+                        <h2>${slide.title}</h2>
+                        <p>${slide.content}</p>
+                        <button class="button" onclick="nextSlide()">Next</button>
+                    </div>
+                `;
+                document.getElementById('slide-container').style.display = 'block';
+                document.getElementById('quiz-container').style.display = 'none';
+                document.getElementById('leaderboard-container').style.display = 'none';
+            } else {
+                loadQuiz();
+            }
         }
 
-        // Event listeners for slide navigation
-        document.getElementById('next-slide').onclick = function() {
+        function nextSlide() {
             currentSlide++;
-            if (currentSlide >= slides.length) currentSlide = 0;
-            updateSlide();
-        };
+            loadSlide();
+        }
 
-        document.getElementById('prev-slide').onclick = function() {
-            currentSlide--;
-            if (currentSlide < 0) currentSlide = slides.length - 1;
-            updateSlide();
-        };
+        function loadQuiz() {
+            const quizContainer = document.getElementById('quiz-container');
+            quizContainer.innerHTML = `
+                <div class="quiz-question">
+                    <h2>${questions[currentQuestionIndex].question}</h2>
+                    <div class="options">
+                        ${questions[currentQuestionIndex].options.map((option, index) => {
+                            return `<button class="button" onclick="checkAnswer(${index})">${option}</button>`;
+                        }).join('')}
+                    </div>
+                </div>
+            `;
+            document.getElementById('quiz-container').style.display = 'block';
+            document.getElementById('slide-container').style.display = 'none';
+            document.getElementById('leaderboard-container').style.display = 'none';
+        }
 
-        // Event listener for "Start Learning" button
-        document.getElementById('learning-btn').onclick = function() {
-            document.querySelector('.container').style.display = 'none';  // Hide dashboard
-            document.getElementById('learning-slides').style.display = 'block';  // Show learning slides
-            updateSlide();  // Initialize the first slide
-        };
+        function checkAnswer(selectedIndex) {
+            const correctAnswer = questions[currentQuestionIndex].correctAnswer;
+            const quizContainer = document.getElementById('quiz-container');
+
+            if (selectedIndex === correctAnswer) {
+                userScore += 10;
+                quizContainer.innerHTML = `
+                    <div class="quiz-question">
+                        <h2>Correct! 🎉</h2>
+                        <button class="button" onclick="nextQuestion()">Next Question</button>
+                    </div>
+                `;
+                showConfetti();
+            } else {
+                quizContainer.innerHTML = `
+                    <div class="quiz-question">
+                        <h2>Incorrect. The correct answer was: ${questions[currentQuestionIndex].options[correctAnswer]}</h2>
+                        <button class="button" onclick="nextQuestion()">Next Question</button>
+                    </div>
+                `;
+            }
+        }
+
+        function nextQuestion() {
+            currentQuestionIndex++;
+            if (currentQuestionIndex < questions.length) {
+                loadQuiz();
+            } else {
+                showLeaderboardForm();
+            }
+        }
+
+        function showConfetti() {
+            const confetti = document.getElementById('confetti');
+            confetti.style.display = 'block';
+            setTimeout(() => {
+                confetti.style.display = 'none';
+            }, 2000);
+        }
+
+        function showLeaderboardForm() {
+            document.getElementById('quiz-container').style.display = 'none';
+            document.getElementById('leaderboard-container').style.display = 'none';
+
+            const leaderboardForm = `
+                <div class="leaderboard-inputs">
+                    <input type="text" id="user-name" placeholder="Enter your name">
+                    <input type="file" id="user-image">
+                    <button class="button" onclick="submitLeaderboard()">Submit</button>
+                </div>
+            `;
+            document.getElementById('leaderboard-container').innerHTML = leaderboardForm;
+            document.getElementById('leaderboard-container').style.display = 'block';
+        }
+
+        function submitLeaderboard() {
+            const name = document.getElementById('user-name').value;
+            const imageInput = document.getElementById('user-image');
+            const image = imageInput.files[0];
+
+            if (!name || !image) {
+                alert('Please enter a name and upload a picture.');
+                return;
+            }
+
+            const reader = new FileReader();
+            reader.onloadend = () => {
+                leaderboard.push({ name: name, score: userScore, image: reader.result });
+                leaderboard = leaderboard.sort((a, b) => b.score - a.score).slice(0, 5);
+                localStorage.setItem('leaderboard', JSON.stringify(leaderboard));
+                showLeaderboard();
+            };
+            reader.readAsDataURL(image);
+        }
+
+        function showLeaderboard() {
+            const leaderboardContainer = document.getElementById('leaderboard-container');
+            leaderboardContainer.innerHTML = `
+                <h2>Leaderboard</h2>
+                <table class="leaderboard-table">
+                    <thead>
+                        <tr>
+                            <th>Rank</th>
+                            <th>Name</th>
+                            <th>Score</th>
+                            <th>Image</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${leaderboard.map((entry, index) => `
+                            <tr>
+                                <td>${index + 1}</td>
+                                <td>${entry.name}</td>
+                                <td>${entry.score}</td>
+                                <td><img src="${entry.image}" alt="User Image" style="width: 50px; height: 50px; border-radius: 50%;"></td>
+                            </tr>
+                        `).join('')}
+                    </tbody>
+                </table>
+            `;
+            document.getElementById('leaderboard-container').style.display = 'block';
+            document.getElementById('quiz-container').style.display = 'none';
+            document.getElementById('slide-container').style.display = 'none';
+        }
+
+        loadSlide();
     </script>
-
 </body>
 </html>
